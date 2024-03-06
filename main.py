@@ -18,7 +18,7 @@ def temperature_plotting_callback():
     plt.grid(True)
     plt.ylabel("temperature / C")
     plt.xlabel("time / s")
-    plt.plot(Time, pin_3_temperature_list, "ro-")
+    plt.plot(time_point_list, pin_3_temperature_list, "ro-")
 
     # Draw subplot for pin 5
     plt.subplot(212)
@@ -26,7 +26,7 @@ def temperature_plotting_callback():
     plt.grid(True)
     plt.ylabel("temperature / C")
     plt.xlabel("time / s")
-    plt.plot(Time, pin_5_temperature_list, "ro-")
+    plt.plot(time_point_list, pin_5_temperature_list, "ro-")
 
     # Make the subplots and labels not overlap each other
     plt.tight_layout()
@@ -68,7 +68,6 @@ pin_5 = board.get_pin("a:5:i")
 # This util.Iterator class is a child of threading.Thread that's used to repeatedly capture output from the serial port
 it = util.Iterator(board)
 it.start()
-Time = []
 time_point_list = []
 elapse = []
 
@@ -103,7 +102,6 @@ while True:
         i += 1
         continue
 
-    Time.append(time_point)
     print("Pin 5 Value [0-1]:", pin_5_value)
     pin_5_voltage = opamp_correction(pin_5_value)
 
@@ -117,12 +115,12 @@ while True:
     print("Pin 5 Temperature (C)", pin_5_temperature)
     pin_5_temperature_list.append(pin_5_temperature)
 
-    print(len(Time), len(pin_5_temperature_list))
+    print(len(time_point_list), len(pin_5_temperature_list))
     drawnow(temperature_plotting_callback)
 
     if i != 0:
-        print("measure time elapse:", Time[i] - Time[i - 1])
-        elapse.append(elapse[i - 1] + Time[i] - Time[i - 1])
+        print("measure time elapse:", time_point_list[i] - time_point_list[i - 1])
+        elapse.append(elapse[i - 1] + time_point_list[i] - time_point_list[i - 1])
         temp_time_point_OBJ = pd.DataFrame(
             {
                 "Time/s": [elapse[i]],
