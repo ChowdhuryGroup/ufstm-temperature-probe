@@ -10,25 +10,26 @@ import os
 import pandas as pd
 
 
-def makeFig1():
+def temperature_plotting_callback():
     # Makes real time plot of temperature data
+    # Draw subplot for pin 3
     plt.subplot(211)
-    plt.title("OBJ_Temperature monitor")  # Plot the title
-    plt.grid(True)  # Turn the grid on
-    plt.ylabel("Temp C")  # Set ylabels
-    plt.plot(
-        Time, pin_3_temperature_list, "ro-", label="OBJ Temperature pin#3"
-    )  # plot the temperature
-    plt.legend(loc="upper right")
+    plt.title("Pin #3 Temperature")
+    plt.grid(True)
+    plt.ylabel("temperature / C")
+    plt.xlabel("time / s")
+    plt.plot(Time, pin_3_temperature_list, "ro-")
+
+    # Draw subplot for pin 5
     plt.subplot(212)
-    plt.title("STM head_Temperature monitor")  # Plot the title
-    plt.grid(True)  # Turn the grid on
-    plt.ylabel("Temp C")  # Set ylabels
-    plt.xlabel("Time/s")
-    plt.plot(
-        Time, pin_5_temperature_list, "ro-", label="STM head Temperature pin#5"
-    )  # plot the temperature
-    plt.legend(loc="upper right")
+    plt.title("Pin #5 Temperature")
+    plt.grid(True)
+    plt.ylabel("temperature / C")
+    plt.xlabel("time / s")
+    plt.plot(Time, pin_5_temperature_list, "ro-")
+
+    # Make the subplots and labels not overlap each other
+    plt.tight_layout()
 
 
 def pin_value_to_volts(pin_value: float) -> float:
@@ -122,7 +123,7 @@ while True:
     )  # Build our tempF array by appending temp readings
 
     print(len(Time), len(pin_5_temperature_list))
-    drawnow(makeFig1)
+    drawnow(temperature_plotting_callback)
 
     if j != 0:
         print("measure time elapse:", Time[j] - Time[j - 1])
