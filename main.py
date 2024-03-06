@@ -122,7 +122,7 @@ while True:
 
     if i != 0:
         print("measure time elapse:", Time[i] - Time[i - 1])
-        elapse.append(elapse[i - 1] + Time[j] - Time[i - 1])
+        elapse.append(elapse[i - 1] + Time[i] - Time[i - 1])
         temp_time_point_OBJ = pd.DataFrame(
             {
                 "Time/s": [elapse[i]],
