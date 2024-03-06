@@ -51,11 +51,17 @@ pin_5_temperature_list = []
 typeK_thermocouple_reference = thermocouples["K"]
 plt.ion()  # Tell matplotlib you want interactive mode to plot live data
 
-OBJ_temp = pd.DataFrame(columns=["Time", "Romm_ref_temp", "OBJ_port_pin3_temp"])
-OBJ_temp.to_csv("OBJ_Temperature monitor.csv", index=False, na_rep="Unknown")
+pin_3_dataframe = pd.DataFrame(
+    columns=["Time", "Reference Temperature", "Pin 3 Temperature"]
+)
+pin_3_dataframe.to_csv("OBJ_Temperature monitor.csv", index=False, na_rep="Unknown")
 
-STM_head_temp = pd.DataFrame(columns=["Time", "Romm_ref_temp", "STM head_pin5_temp"])
-STM_head_temp.to_csv("STM_head_Temperature monitor.csv", index=False, na_rep="Unknown")
+pin_5_dataframe = pd.DataFrame(
+    columns=["Time", "Reference Temperature", "Pin 3 Temperature"]
+)
+pin_5_dataframe.to_csv(
+    "STM_head_Temperature monitor.csv", index=False, na_rep="Unknown"
+)
 
 
 # Read voltages on analog pin number 5
@@ -121,14 +127,14 @@ while True:
     if i != 0:
         print("measure time elapse:", time_point_list[i] - time_point_list[i - 1])
         elapse.append(elapse[i - 1] + time_point_list[i] - time_point_list[i - 1])
-        temp_time_point_OBJ = pd.DataFrame(
+        pin_3_datapoint = pd.DataFrame(
             {
                 "Time/s": [elapse[i]],
                 "Cold junction temp/C": [Tref],
                 "obj_pin3_temp/C": [temp3],
             }
         )
-        temp_time_point_STM_head = pd.DataFrame(
+        pin_5_datapoint = pd.DataFrame(
             {
                 "Time/s": [elapse[i]],
                 "Cold junction_temp": [Tref],
@@ -137,21 +143,21 @@ while True:
         )
     else:
         elapse.append(0)
-        temp_time_point_OBJ = pd.DataFrame(
+        pin_3_datapoint = pd.DataFrame(
             {
                 "Time/s": [0],
                 "Cold junction temp/C": [Tref],
                 "obj_pin3_temp/C": [temp3],
             }
         )
-        temp_time_point_STM_head = pd.DataFrame(
+        pin_5_datapoint = pd.DataFrame(
             {
                 "Time/s": [0],
                 "Cold junction_temp": [Tref],
                 "STM_head_pin5_temp/C": [pin_5_temperature],
             }
         )
-    temp_time_point_OBJ.to_csv("pin3.csv", mode="a", index=False, header=False)
-    temp_time_point_STM_head.to_csv("pin5.csv", mode="a", index=False, header=False)
+    pin_3_datapoint.to_csv("pin3.csv", mode="a", index=False, header=False)
+    pin_5_datapoint.to_csv("pin5.csv", mode="a", index=False, header=False)
 
     i += 1
