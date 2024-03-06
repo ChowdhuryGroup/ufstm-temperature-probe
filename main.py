@@ -59,6 +59,9 @@ STM_head_temp.to_csv("STM_head_Temperature monitor.csv", index=False, na_rep="Un
 board = Arduino("COM3")
 pin_5 = board.get_pin("a:5:i")
 
+# PyFirmata, which is being used to interface with the Arduino, for some reason calls
+# the function that reads and handles data from the microcontroller over the serial port: board.iterate()
+# This util.Iterator class is a child of threading.Thread that's used to repeatedly capture output from the serial port
 it = util.Iterator(board)
 it.start()
 Time = []
