@@ -16,7 +16,9 @@ def makeFig1():
     plt.title("OBJ_Temperature monitor")  # Plot the title
     plt.grid(True)  # Turn the grid on
     plt.ylabel("Temp C")  # Set ylabels
-    plt.plot(Time, Temp3, "ro-", label="OBJ Temperature pin#3")  # plot the temperature
+    plt.plot(
+        Time, pin_3_temperature_list, "ro-", label="OBJ Temperature pin#3"
+    )  # plot the temperature
     plt.legend(loc="upper right")
     plt.subplot(212)
     plt.title("STM head_Temperature monitor")  # Plot the title
@@ -24,7 +26,7 @@ def makeFig1():
     plt.ylabel("Temp C")  # Set ylabels
     plt.xlabel("Time/s")
     plt.plot(
-        Time, Temp5, "ro-", label="STM head Temperature pin#5"
+        Time, pin_5_temperature_list, "ro-", label="STM head Temperature pin#5"
     )  # plot the temperature
     plt.legend(loc="upper right")
 
@@ -43,8 +45,8 @@ def opamp_correction(pin_value: float) -> float:
     return (pin_value_to_volts(pin_value) + offset_voltage) * gain_scale * 1000
 
 
-Temp3 = []
-Temp5 = []
+pin_3_temperature_list = []
+pin_5_temperature_list = []
 typeK_thermocouple_reference = thermocouples["K"]
 plt.ion()  # Tell matplotlib you want interactive mode to plot live data
 
@@ -106,22 +108,24 @@ while True:
     pin_5_voltage = opamp_correction(pin_5_value)
 
     temp3 = 0
-    Temp3.append(temp3)  # Build our tempF array by appending temp readings
+    pin_3_temperature_list.append(
+        temp3
+    )  # Build our tempF array by appending temp readings
 
     # inverse_CmV() converts mV to Celsius based on thermocouple type
     pin_5_temperature = typeK_thermocouple_reference.inverse_CmV(
         pin_5_voltage, Tref=20.0
     )
     print("Pin 5 Temperature (C)", pin_5_temperature)
-    Temp5.append(pin_5_temperature)  # Build our tempF array by appending temp readings
+    pin_5_temperature_list.append(
+        pin_5_temperature
+    )  # Build our tempF array by appending temp readings
 
-    if j > 0:
-        print("measure time elapse:", Time[j] - Time[j - 1])
-
-    print(len(Time), len(Temp5))
+    print(len(Time), len(pin_5_temperature_list))
     drawnow(makeFig1)
 
     if j != 0:
+        print("measure time elapse:", Time[j] - Time[j - 1])
         elapse.append(elapse[j - 1] + Time[j] - Time[j - 1])
         temp_time_point_OBJ = pd.DataFrame(
             {
