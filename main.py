@@ -9,22 +9,6 @@ from thermocouples_reference import thermocouples
 import os
 import pandas as pd
 
-board = Arduino("COM3")
-
-
-Temp3 = []
-Temp5 = []
-typeK = thermocouples["K"]
-plt.ion()  # Tell matplotlib you want interactive mode to plot live data
-cnt = 0
-os.chdir("C:\\Users\\spmuser\\Desktop")
-
-OBJ_temp = pd.DataFrame(columns=["Time", "Romm_ref_temp", "OBJ_port_pin3_temp"])
-OBJ_temp.to_csv("OBJ_Temperature monitor.csv", index=False, na_rep="Unknown")
-
-STM_head_temp = pd.DataFrame(columns=["Time", "Romm_ref_temp", "STM head_pin5_temp"])
-STM_head_temp.to_csv("STM_head_Temperature monitor.csv", index=False, na_rep="Unknown")
-
 
 def makeFig1():  # Create a function that makes our desired plot
     plt.subplot(211)
@@ -44,9 +28,23 @@ def makeFig1():  # Create a function that makes our desired plot
     plt.legend(loc="upper right")
 
 
-pin0 = board.get_pin("a:0:i")  # read the line of text from the serial port
-pin3 = board.get_pin("a:3:i")  # read the line of text from the serial port
-pin5 = board.get_pin("a:5:i")  # read the line of text from the serial port
+Temp3 = []
+Temp5 = []
+typeK = thermocouples["K"]
+plt.ion()  # Tell matplotlib you want interactive mode to plot live data
+cnt = 0
+os.chdir("C:\\Users\\spmuser\\Desktop")
+
+OBJ_temp = pd.DataFrame(columns=["Time", "Romm_ref_temp", "OBJ_port_pin3_temp"])
+OBJ_temp.to_csv("OBJ_Temperature monitor.csv", index=False, na_rep="Unknown")
+
+STM_head_temp = pd.DataFrame(columns=["Time", "Romm_ref_temp", "STM head_pin5_temp"])
+STM_head_temp.to_csv("STM_head_Temperature monitor.csv", index=False, na_rep="Unknown")
+
+
+# Read voltages on analog pin number 5
+board = Arduino("COM3")
+analog_opamp_pin = board.get_pin("a:5:i")
 
 it = util.Iterator(board)
 it.start()
@@ -76,9 +74,7 @@ while True:
     )  # Calculate time to wait until next reading
     time.sleep(time_to_wait)
 
-    Vref = pin0.read()  # Convert first element to floating number and put in temp
-    VTC = pin3.read()  # obj
-    VTCLL = pin5.read()  # stm head
+    VTCLL = analog_opamp_pin.read()  # stm head
     start_time = time.time()
     time_point = start_time
 
