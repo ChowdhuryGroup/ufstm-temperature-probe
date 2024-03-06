@@ -78,7 +78,6 @@ if os.path.exists("pin3.csv"):
     os.remove("pin3.csv")
 
 i = 0
-j = 0
 Tref = 20
 while True:
     time_point = time.time()
@@ -109,35 +108,31 @@ while True:
     pin_5_voltage = opamp_correction(pin_5_value)
 
     temp3 = 0
-    pin_3_temperature_list.append(
-        temp3
-    )  # Build our tempF array by appending temp readings
+    pin_3_temperature_list.append(temp3)
 
     # inverse_CmV() converts mV to Celsius based on thermocouple type
     pin_5_temperature = typeK_thermocouple_reference.inverse_CmV(
         pin_5_voltage, Tref=20.0
     )
     print("Pin 5 Temperature (C)", pin_5_temperature)
-    pin_5_temperature_list.append(
-        pin_5_temperature
-    )  # Build our tempF array by appending temp readings
+    pin_5_temperature_list.append(pin_5_temperature)
 
     print(len(Time), len(pin_5_temperature_list))
     drawnow(temperature_plotting_callback)
 
-    if j != 0:
-        print("measure time elapse:", Time[j] - Time[j - 1])
-        elapse.append(elapse[j - 1] + Time[j] - Time[j - 1])
+    if i != 0:
+        print("measure time elapse:", Time[i] - Time[i - 1])
+        elapse.append(elapse[i - 1] + Time[j] - Time[i - 1])
         temp_time_point_OBJ = pd.DataFrame(
             {
-                "Time/s": [elapse[j]],
+                "Time/s": [elapse[i]],
                 "Cold junction temp/C": [Tref],
                 "obj_pin3_temp/C": [temp3],
             }
         )
         temp_time_point_STM_head = pd.DataFrame(
             {
-                "Time/s": [elapse[j]],
+                "Time/s": [elapse[i]],
                 "Cold junction_temp": [Tref],
                 "STM_head_pin5_temp/C": [pin_5_temperature],
             }
@@ -161,5 +156,4 @@ while True:
     temp_time_point_OBJ.to_csv("pin3.csv", mode="a", index=False, header=False)
     temp_time_point_STM_head.to_csv("pin5.csv", mode="a", index=False, header=False)
 
-    j = j + 1
     i += 1
