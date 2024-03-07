@@ -95,14 +95,11 @@ while True:
         )
 
     # Adjust delay to achieve 25 readings per second
-    time_to_wait = max(
-        0, 1 / 2 - iteration_elapsed_time
-    )  # Calculate time to wait until next reading
+    # Calculate time to wait until next reading
+    time_to_wait = max(0, 1 / 2 - iteration_elapsed_time)
     time.sleep(time_to_wait)
 
     pin_5_value = pin_5.read()
-    start_time = time.time()
-    time_point = start_time
 
     if i == 0:
         i += 1
@@ -111,8 +108,8 @@ while True:
     print("Pin 5 Value [0-1]:", pin_5_value)
     pin_5_voltage = opamp_correction(pin_5_value)
 
-    temp3 = 0
-    pin_3_temperature_list.append(temp3)
+    pin_3_temperature = 0
+    pin_3_temperature_list.append(pin_3_temperature)
 
     # inverse_CmV() converts mV to Celsius based on thermocouple type
     pin_5_temperature = typeK_thermocouple_reference.inverse_CmV(
@@ -121,7 +118,9 @@ while True:
     print("Pin 5 Temperature (C)", pin_5_temperature)
     pin_5_temperature_list.append(pin_5_temperature)
 
-    print(len(time_point_list), len(pin_5_temperature_list))
+    print(
+        f"Time list length: {len(time_point_list)}, Temperature list length: {len(pin_5_temperature_list)}"
+    )
     drawnow(temperature_plotting_callback)
 
     if i != 0:
@@ -131,7 +130,7 @@ while True:
             {
                 "Time/s": [elapse[i]],
                 "Cold junction temp/C": [Tref],
-                "obj_pin3_temp/C": [temp3],
+                "obj_pin3_temp/C": [pin_3_temperature],
             }
         )
         pin_5_datapoint = pd.DataFrame(
@@ -147,7 +146,7 @@ while True:
             {
                 "Time/s": [0],
                 "Cold junction temp/C": [Tref],
-                "obj_pin3_temp/C": [temp3],
+                "obj_pin3_temp/C": [pin_3_temperature],
             }
         )
         pin_5_datapoint = pd.DataFrame(
