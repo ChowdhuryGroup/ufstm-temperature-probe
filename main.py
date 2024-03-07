@@ -10,7 +10,7 @@ import os
 import pandas as pd
 
 
-def temperature_plotting_callback():
+def plot_temperature():
     # Makes real time plot of temperature data
     # Draw subplot for pin 3
     plt.subplot(211)
@@ -49,19 +49,16 @@ def opamp_correction(pin_value: float) -> float:
 pin_3_temperature_list = []
 pin_5_temperature_list = []
 typeK_thermocouple_reference = thermocouples["K"]
-plt.ion()  # Tell matplotlib you want interactive mode to plot live data
 
 pin_3_dataframe = pd.DataFrame(
     columns=["Time", "Reference Temperature", "Pin 3 Temperature"]
 )
-pin_3_dataframe.to_csv("OBJ_Temperature monitor.csv", index=False, na_rep="Unknown")
+pin_3_dataframe.to_csv("Pin 3 Temperature Monitor.csv", index=False, na_rep="Unknown")
 
 pin_5_dataframe = pd.DataFrame(
     columns=["Time", "Reference Temperature", "Pin 3 Temperature"]
 )
-pin_5_dataframe.to_csv(
-    "STM_head_Temperature monitor.csv", index=False, na_rep="Unknown"
-)
+pin_5_dataframe.to_csv("Pin 5 Temperature Monitor.csv", index=False, na_rep="Unknown")
 
 
 # Read voltages on analog pin number 5
@@ -75,15 +72,15 @@ pin_5 = board.get_pin("a:5:i")
 it = util.Iterator(board)
 it.start()
 time_point_list = []
-elapse = []
 
 if os.path.exists("pin5.csv"):
     os.remove("pin5.csv")
 if os.path.exists("pin3.csv"):
     os.remove("pin3.csv")
 
+reference_temperature = 20
+plt.ion()  # Tell matplotlib you want interactive mode to allow live data plotting
 i = 0
-Tref = 20
 while True:
     time_point = time.time()
     time_point_list.append(time_point)
@@ -116,7 +113,7 @@ while True:
     print(
         f"Time list length: {len(time_point_list)}, Temperature list length: {len(pin_5_temperature_list)}"
     )
-    drawnow(temperature_plotting_callback)
+    drawnow(plot_temperature)
 
     elapsed_time = time_point_list[i] - time_point_list[0]
     print(f"Elapsed time: {elapsed_time}")
@@ -124,14 +121,14 @@ while True:
     pin_3_datapoint = pd.DataFrame(
         {
             "Time/s": [elapsed_time],
-            "Cold junction temp/C": [Tref],
+            "Cold junction temp/C": [reference_temperature],
             "obj_pin3_temp/C": [pin_3_temperature],
         }
     )
     pin_5_datapoint = pd.DataFrame(
         {
             "Time/s": [elapsed_time],
-            "Cold junction_temp": [Tref],
+            "Cold junction_temp": [reference_temperature],
             "STM_head_pin5_temp/C": [pin_5_temperature],
         }
     )
