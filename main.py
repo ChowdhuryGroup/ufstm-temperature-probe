@@ -94,11 +94,6 @@ while True:
             time_point_list[i] - time_point_list[i - 1],
         )
 
-    # Adjust delay to achieve 25 readings per second
-    # Calculate time to wait until next reading
-    time_to_wait = max(0, 1 / 2 - iteration_elapsed_time)
-    time.sleep(time_to_wait)
-
     pin_5_value = pin_5.read()
 
     if i == 0:
@@ -123,40 +118,32 @@ while True:
     )
     drawnow(temperature_plotting_callback)
 
-    if i != 0:
-        print("measure time elapse:", time_point_list[i] - time_point_list[i - 1])
-        elapse.append(elapse[i - 1] + time_point_list[i] - time_point_list[i - 1])
-        pin_3_datapoint = pd.DataFrame(
-            {
-                "Time/s": [elapse[i]],
-                "Cold junction temp/C": [Tref],
-                "obj_pin3_temp/C": [pin_3_temperature],
-            }
-        )
-        pin_5_datapoint = pd.DataFrame(
-            {
-                "Time/s": [elapse[i]],
-                "Cold junction_temp": [Tref],
-                "STM_head_pin5_temp/C": [pin_5_temperature],
-            }
-        )
-    else:
-        elapse.append(0)
-        pin_3_datapoint = pd.DataFrame(
-            {
-                "Time/s": [0],
-                "Cold junction temp/C": [Tref],
-                "obj_pin3_temp/C": [pin_3_temperature],
-            }
-        )
-        pin_5_datapoint = pd.DataFrame(
-            {
-                "Time/s": [0],
-                "Cold junction_temp": [Tref],
-                "STM_head_pin5_temp/C": [pin_5_temperature],
-            }
-        )
+    elapsed_time = time_point_list[i] - time_point_list[0]
+    print(f"Elapsed time: {elapsed_time}")
+
+    pin_3_datapoint = pd.DataFrame(
+        {
+            "Time/s": [elapsed_time],
+            "Cold junction temp/C": [Tref],
+            "obj_pin3_temp/C": [pin_3_temperature],
+        }
+    )
+    pin_5_datapoint = pd.DataFrame(
+        {
+            "Time/s": [elapsed_time],
+            "Cold junction_temp": [Tref],
+            "STM_head_pin5_temp/C": [pin_5_temperature],
+        }
+    )
+
     pin_3_datapoint.to_csv("pin3.csv", mode="a", index=False, header=False)
     pin_5_datapoint.to_csv("pin5.csv", mode="a", index=False, header=False)
 
     i += 1
+
+    # Adjust delay to achieve around 2 readings per second
+    # DO NOT ASSUME EXACTLY 2 READS/S FOR PLOTTING!!! USE TIME VALUES IN CSV FILE!
+    # Calculate time to wait until next reading
+    current_loop_time = time.time() - time_point_list[-1]
+    time_to_wait = max(0, 0.5 - current_loop_time)
+    time.sleep(time_to_wait)
